@@ -4,14 +4,14 @@
 
 pacman::p_load(tidyverse)
 counties <- readRDS("Data/counties.rds",refhook = NULL)
-# Transforming Data with dplyr ####
+# 1 Transforming Data with dplyr ####
 
 # Take a look at the counties dataset using the glimpse() function.
 glimpse(counties)
 dim(counties)
 head(counties)
 
-
+# arrange() ####
 # Select the columns
 counties %>%
   select(state, county, population, poverty)
@@ -23,6 +23,7 @@ counties_selected <- counties %>%
 counties_selected %>%
   arrange((desc(public_work)))
 
+# filter() ####
 # Find only the counties that have a population above one million (1000000).
 counties_selected <- counties %>%
   select(state, county, population) 
@@ -40,6 +41,7 @@ counties_selected <- counties %>%
   filter(state=="Texas", population>10000) %>% 
   arrange(desc(private_work))
 
+# mutate() ####
 # Use mutate() to add a column called public_workers to the dataset, with the number of people employed in public (government) work. Then sort in descending order of the public_workers column
 counties_selected <- counties %>%
   select(state, county, population, public_work) %>% 
@@ -62,15 +64,33 @@ counties %>%
   filter(population >= 10000) %>%
   arrange(desc(proportion_men))
 
-# Aggregating Data ####
+# 2 Aggregating Data ####
 # Use count() to find the number of counties in each region, using a second argument to sort in descending order.
+# count() ####
 counties_selected <- counties %>%
   select(county, region, state, population, citizens) %>% 
-  count(region, sort=T)
+  count(region, sort=TRUE)
 
 counties %>% 
   select(county, region, state, population, citizens) %>% 
   group_by(region) %>% 
   summarise(obeservations_per_region=n()) %>% 
   arrange(desc(obeservations_per_region))
-  
+
+
+# Count the number of counties in each state, weighted based on the citizens column, and sorted in descending order.
+counties %>%
+  select(county, region, state, population, citizens) %>%
+  count(state, wt=citizens, sort = TRUE)
+
+# Mutating and counting
+counties_selected <- counties %>%
+  select(county, region, state, population, walk)
+
+# Use mutate() to calculate and add a column called population_walk, containing the total number of people who walk to work in a county.
+# Use a (weighted and sorted) count() to find the total number of people who walk to work in each state.
+counties_selected %>%
+  mutate(population_walk = population*walk/100) %>%
+  count(state, wt=population_walk, sort = TRUE)
+
+
