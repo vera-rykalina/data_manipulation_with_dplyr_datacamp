@@ -37,3 +37,50 @@ counties_selected %>%
   mutate(population_walk = population*walk/100) %>%
   count(state, wt=population_walk, sort = TRUE)
 
+# group_by(), summarize(), and ungroup() ####
+
+# The summarize() verb is very useful for collapsing a large dataset into a single observation.
+counties_selected <- counties %>%
+  select(county, population, income, unemployment)
+
+# Summarize the counties dataset to find the following columns: min_population (with the smallest population), max_unemployment (with the maximum unemployment), and average_income (with the mean of the income variable).
+counties_selected %>% 
+  summarise(min_population = min(population),
+            max_unemployment = max(unemployment),
+            average_income = mean(income))
+
+# Summarizing by state
+
+# Another interesting column is land_area, which shows the land area in square miles. Here, you'll summarize both population and land area by state, with the purpose of finding the density (in people per square miles).
+(counties_selected <- counties %>%
+  select(state, county, population, land_area))
+
+# Group the data by state, and summarize to create the columns total_area (with total area in square miles) and total_population (with total population).
+
+# Add a density column with the people per square mile, then arrange in descending order.
+
+(counties_selected %>% 
+  group_by(state) %>% 
+  summarise(total_area = sum(land_area),
+            total_population = sum(population)) %>%
+  mutate(density = total_population/total_area) %>% 
+  arrange(desc(density)))
+
+# Summarizing by state and region
+
+# You can group by multiple columns instead of grouping by one. Here, you'll practice aggregating by state and region, and notice how useful it is for performing multiple aggregations in a row.
+
+(counties_selected <- counties %>%
+  select(region, state, county, population))
+
+# Summarize to find the total population, as a column called total_pop, in each combination of region and state.
+
+# Notice the tibble is still grouped by region; use another summarize() step to calculate two new columns: the average state population in each region (average_pop) and the median state population in each region (median_pop).
+
+(counties_selected %>% 
+  group_by(region, state) %>%
+  summarise(total_pop = sum(population)) %>% 
+  summarise(average_pop = mean(total_pop), 
+            median_pop = median(total_pop)))
+ 
+
