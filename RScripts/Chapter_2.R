@@ -33,6 +33,7 @@ counties_selected <- counties %>%
 
 # Use mutate() to calculate and add a column called population_walk, containing the total number of people who walk to work in a county.
 # Use a (weighted and sorted) count() to find the total number of people who walk to work in each state.
+
 counties_selected %>%
   mutate(population_walk = population*walk/100) %>%
   count(state, wt=population_walk, sort = TRUE)
@@ -83,4 +84,48 @@ counties_selected %>%
   summarise(average_pop = mean(total_pop), 
             median_pop = median(total_pop)))
  
+# top_n() ####
+# Selecting a county from each region
 
+# Find the county in each region with the highest percentage of citizens who walk to work.
+counties_selected <- counties %>%
+  select(region, state, county, metro, population, walk)
+
+counties_selected %>% 
+  group_by(region) %>% 
+  top_n(1, walk)
+
+# Finding the highest-income state in each region
+
+# Here, you'll combine group_by(), summarize(), and top_n() to find the state in each region with the highest income.
+
+# When you group by multiple columns and then summarize, it's important to remember that the summarize "peels off" one of the groups, but leaves the rest on. For example, if you group_by(X, Y) then summarize, the result will still be grouped by X.
+
+# Calculate the average income (as average_income) of counties within each region and state and find the highest income state in each region.
+
+counties_selected <- counties %>%
+  select(region, state, county, population, income)
+
+counties_selected %>%
+  group_by(region, state) %>% 
+  summarize(average_income = mean(income)) %>%
+  top_n(1, average_income)
+
+# Using summarize, top_n, and count together
+
+# In this exercise, you'll use all of them to answer a question: In how many states do more people live in metro areas than non-metro areas?
+
+# Recall that the metro column has one of the two values "Metro" (for high-density city areas) or "Nonmetro" (for suburban and country areas).
+counties_selected <- counties %>%
+  select(state, metro, population)
+
+# 1. For each combination of state and metro, find the total population as total_pop.
+# 2. Extract the most populated row from each state, which will be either Metro or Nonmetro.
+# 3. Ungroup, then count how often Metro or Nonmetro appears to see how many states have more people living in those areas.
+
+counties_selected %>% 
+  group_by(state, metro) %>% 
+  summarize(total_pop = sum(population)) %>% 
+  top_n(1, total_pop) %>% 
+  ungroup() %>% 
+  count(metro)
