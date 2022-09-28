@@ -29,3 +29,24 @@ counties %>%
 counties %>% 
   select(state, county, population, ends_with("work")) %>% 
   filter(public_work > 50)
+
+
+# rename() ####
+# Renaming a column after count
+
+# The rename() verb is often useful for changing the name of a column that comes out of another verb, such as count(). In this exercise, you'll rename the n column from count() (which you learned about in Chapter 2) to something more descriptive.
+
+counties %>%
+  # Count the number of counties in each state
+  count(state) %>%
+  # Rename the n column to num_counties
+  rename(num_counties = n)
+
+# Renaming a column as part of a select
+
+# rename() isn't the only way you can choose a new name for a column; you can also choose a name as part of a select().
+
+# Select the columns state, county, and poverty from the counties dataset; in the same step, rename the poverty column to poverty_rate.
+
+counties %>%
+  select(state, county, poverty_rate = poverty)
