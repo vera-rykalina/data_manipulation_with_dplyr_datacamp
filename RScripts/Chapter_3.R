@@ -50,3 +50,43 @@ counties %>%
 
 counties %>%
   select(state, county, poverty_rate = poverty)
+
+# transmute() ####
+# As you learned in the video, the transmute verb allows you to control which variables you keep, which variables you calculate, and which variables you drop.
+
+# Keep only the state, county, and population columns, and add a new column, density, that contains the population per land_area.
+
+# Filter for only counties with a population greater than one million.
+# Sort the table in ascending order of density.
+
+counties %>%
+  # Keep the state, county, and populations columns, and add a density column
+  transmute(state, county, population, density = population/land_area) %>%
+  # Filter for counties with a population greater than one million 
+  filter(population > 1000000) %>%
+  # Sort density in ascending order 
+  arrange(density)
+
+# Choosing among the four verbs
+# In this chapter you've learned about the four verbs: select, mutate, transmute, and rename. Here, you'll choose the appropriate verb for each situation. You won't need to change anything inside the parentheses.
+
+# Choose the right verb for changing the name of the unemployment column to unemployment_rate
+# Choose the right verb for keeping only the columns state, county, and the ones containing poverty.
+# Calculate a new column called fraction_women with the fraction of the population made up of women, without dropping any columns.
+# Keep only three columns: the state, county, and employed / population, which you'll call employment_rate.
+
+# Change the name of the unemployment column
+counties %>%
+  rename(unemployment_rate = unemployment)
+
+# Keep the state and county columns, and the columns containing poverty
+counties %>%
+  select(state, county, contains("poverty"))
+
+# Calculate the fraction_women column without dropping the other columns
+counties %>%
+  mutate(fraction_women = women / population)
+
+# Keep only the state, county, and employment_rate columns
+counties %>%
+  transmute(state, county, employment_rate = employed / population)
