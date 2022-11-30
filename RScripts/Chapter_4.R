@@ -42,3 +42,22 @@ selected_names <- babynames %>%
 # Visualize those three names as a line plot over time, with each name represented by a different color.
 ggplot(selected_names, aes(x = year, y = number, color = name)) +
   geom_line()
+
+# Finding the year each name is most common
+# In an earlier video, you learned how to filter for a particular name to determine the frequency of that name over time. Now, you're going to explore which year each name was the most common.
+
+# To do this, you'll be combining the grouped mutate approach with a slice_max().
+
+# First, calculate the total number of people born in that year in this dataset as year_total.
+# Next, use year_total to calculate the fraction of people born in each year that have each name.
+# # Now use your newly calculated fraction column, in combination with slice_max(), to identify the year each name was most common.
+
+babynames %>%
+  group_by(year) %>%
+  mutate(year_total = sum(number)) %>%
+  ungroup() %>%
+  mutate(fraction = number/year_total) %>%
+  group_by(name) %>%
+  slice_max(fraction, n = 1)
+
+
