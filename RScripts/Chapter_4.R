@@ -98,5 +98,25 @@ names_normalized <- babynames %>%
 names_filtered <- names_normalized %>%
   filter(name %in% c("Steven", "Thomas", "Matthew"))
 
-ggplot(names_filtered, aes(x = year, y = fraction_max, color = name)) +
-  geom_line()
+ggplot(names_filtered, aes(x = year, y = fraction_max, color = name)) + geom_line()
+
+# lag() ####
+# Using ratios to describe the frequency of a name
+# In the video, you learned how to find the difference in the frequency of a baby name between consecutive years. What if instead of finding the difference, you wanted to find the ratio?
+  
+# You'll start with the babynames_fraction data already, so that you can consider the popularity of each name within each year.
+
+babynames_fraction <- babynames %>%
+  group_by(year) %>%
+  mutate(year_total = sum(number)) %>%
+  ungroup() %>%
+  mutate(fraction = number/year_total)
+
+# Arrange the data in ascending order of name and then year.
+# Group by name so that your mutate works within each name.
+# Add a column ratio containing the ratio (not difference) of fraction between each year.
+
+babynames_fraction %>%
+  arrange(name, year) %>%
+  group_by(name) %>%
+  mutate(ratio = fraction/lag(fraction))
